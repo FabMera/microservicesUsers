@@ -17,25 +17,30 @@ public class UsuarioServiceImplementacion implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> listar() {
+    public List<Usuario> ListAllUsers() {
         return (List<Usuario>) usuarioRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Usuario> porId(Long id) {
+    public Optional<Usuario> ListUserForId(Long id) {
         return usuarioRepository.findById(id);
     }
 
     @Transactional
     @Override
-    public Usuario guardar(Usuario usuario) {
+    public Usuario SaveUser(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
     @Transactional
     @Override
-    public void eliminar(Long id) {
+    public void DeleteUser(Long id) {
         usuarioRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Usuario> FindUserForEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 }

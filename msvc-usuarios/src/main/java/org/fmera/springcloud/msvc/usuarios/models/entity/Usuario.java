@@ -1,6 +1,9 @@
 package org.fmera.springcloud.msvc.usuarios.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "usuarios")
@@ -9,9 +12,14 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
     private String nombre;
-    @Column (unique = true)
+
+    @Column(unique = true) //Validacion de campo unico.
+    @Email(message = "El email no es valido") //Validacion de campo email.
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
 
 
@@ -21,7 +29,8 @@ public class Usuario {
         this.email = email;
         this.password = password;
     }
-    public Usuario(){
+
+    public Usuario() {
 
     }
 

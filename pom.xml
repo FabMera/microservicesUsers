@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>msvc-usuarios</module>
+        <module>msvc-cursos</module>
     </modules>
 
     <properties>
