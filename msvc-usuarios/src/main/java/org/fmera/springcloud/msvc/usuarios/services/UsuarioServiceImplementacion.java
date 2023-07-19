@@ -1,5 +1,6 @@
 package org.fmera.springcloud.msvc.usuarios.services;
 
+import org.fmera.springcloud.msvc.usuarios.clients.CursoClientRest;
 import org.fmera.springcloud.msvc.usuarios.models.entity.Usuario;
 import org.fmera.springcloud.msvc.usuarios.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class UsuarioServiceImplementacion implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CursoClientRest cursoClientRest;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,8 +41,13 @@ public class UsuarioServiceImplementacion implements UsuarioService {
     @Override
     public void DeleteUser(Long id) {
         usuarioRepository.deleteById(id);
+        cursoClientRest.eliminarCursoUsuarioPorId(id);
     }
 
+    @Override
+    public List<Usuario> ListUsersForIds(List<Long> ids) {
+        return (List<Usuario>) usuarioRepository.findAllById(ids);
+    }
     @Override
     public Optional<Usuario> FindUserForEmail(String email) {
         return usuarioRepository.findByEmail(email);

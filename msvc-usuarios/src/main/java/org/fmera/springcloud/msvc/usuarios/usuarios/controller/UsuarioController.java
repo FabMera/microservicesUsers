@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/")
 public class UsuarioController {
 
     @Autowired
@@ -85,14 +85,9 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    //Metodo para validar los campos del usuario, se usa un map para guardar los errores y devolverlos en el response.EXTRAER METODO IDE.
-    //iteramos los errores y los guardamos en el map errores con el campo y el mensaje de error correspondiente a cada campo.
-    private static ResponseEntity<Map<String, String>> validar(BindingResult binding) {
-        Map<String, String> errores = new HashMap<>();
-        binding.getFieldErrors().forEach(err -> {
-            errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
-        });
-        return ResponseEntity.badRequest().body(errores);
+    @GetMapping("/usuarios-por-curso")
+    public ResponseEntity<?> obtenerAlumnosPorCursos(@RequestParam List<Long> ids) {
+        return ResponseEntity.ok(usuarioService.ListUsersForIds(ids));
     }
 
     //Metodo para validar un email ya existente.
@@ -103,6 +98,16 @@ public class UsuarioController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         return null;
+    }
+
+    //Metodo para validar los campos del usuario, se usa un map para guardar los errores y devolverlos en el response.EXTRAER METODO IDE.
+    //iteramos los errores y los guardamos en el map errores con el campo y el mensaje de error correspondiente a cada campo.
+    private static ResponseEntity<Map<String, String>> validar(BindingResult binding) {
+        Map<String, String> errores = new HashMap<>();
+        binding.getFieldErrors().forEach(err -> {
+            errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errores);
     }
 
 }

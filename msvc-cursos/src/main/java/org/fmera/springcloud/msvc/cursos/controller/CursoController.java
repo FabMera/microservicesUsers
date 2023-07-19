@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/cursos")
+@RequestMapping("/")
 public class CursoController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class CursoController {
     //Metodo para mostrar un curso por id.
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id) {
-        Optional<Curso> o = cursoService.porId(id);
+        Optional<Curso> o = cursoService.obtenerUsuariosPorCurso(id); //Obtenemos los usuarios por curso y lo guardamos en un Optional..
         if (o.isPresent()) {
             return ResponseEntity.ok(o.get());
         }
@@ -74,9 +74,9 @@ public class CursoController {
     }
 
     //Metodo para asignar un usuario a un curso.
-    @PutMapping("/asignar-usuario/{id}")
+    @PutMapping("/asignar-usuario/{cursoId}")
     public ResponseEntity<?> asignarUsuarioACurso(@RequestBody Usuario usuario, @PathVariable Long cursoId) {
-        Optional<Usuario> o ;
+        Optional<Usuario> o;
         try {
             o = cursoService.asignarUsuario(usuario, cursoId);
         } catch (FeignException e) {
@@ -92,13 +92,39 @@ public class CursoController {
     //Metodo para crear un usuario y asignarlo a un curso.
 
     @PostMapping("/crear-usuario/{cursoId}")
-    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario,@PathVariable Long cursoId){
+    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId) {
         Optional<Usuario> o;
-        try{
-            o = cursoService.crearUsuario(usuario,cursoId);
-        }catch(){
-
+        try {
+            o = cursoService.crearUsuario(usuario, cursoId);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singleton("Error al crear usuario y asignarlo al curso, usuario no encontrado"));
         }
+        if (o.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(o.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/eliminar-usuario/{cursoId}")
+    public ResponseEntity<?> eliminarUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId) {
+        Optional<Usuario> o;
+        try {
+            o = cursoService.eliminarUsuario(usuario, cursoId);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singleton("Error al eliminar usuario del curso, usuario no encontrado"));
+        }
+        if (o.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(o.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+    //Metodo para eliminar un usuario de un curso por el id.
+    @DeleteMapping("/eliminar-curso-usuario/{id}")
+    public ResponseEntity<?> eliminarCursoUsuarioPorId(@PathVariable Long id) {
+        cursoService.eliminarCursoUsuarioPorId(id);
+        return ResponseEntity.noContent().build();
     }
 
     //Metodo para validar campos.

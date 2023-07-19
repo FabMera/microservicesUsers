@@ -11,6 +11,7 @@ public interface CursoService {
     Optional<Curso> porId(Long id);
     Curso guardar(Curso curso);
     void eliminar(Long id);
+    void eliminarCursoUsuarioPorId(Long id);
 
 
     // Se utiliza el modelo Usuario del microservicio usuarios para no tener que crear un modelo Usuario en este microservicio.
@@ -22,4 +23,7 @@ public interface CursoService {
 
     //Metodo para eliminar un usuario de un curso no se elimina el usuario solo se desasigna del curso.
     Optional<Usuario> eliminarUsuario(Usuario usuario,Long cursoId);
+
+    //Metodo para obtener los usuarios de un curso.
+    Optional<Curso> obtenerUsuariosPorCurso(Long cursoId);
 }

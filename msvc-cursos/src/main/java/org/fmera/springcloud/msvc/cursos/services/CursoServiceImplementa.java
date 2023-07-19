@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CursoServiceImplementa implements CursoService {
@@ -43,6 +44,12 @@ public class CursoServiceImplementa implements CursoService {
     @Transactional
     public void eliminar(Long id) {
         cursoRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarCursoUsuarioPorId(Long id) {
+        cursoRepository.eliminarCursoUsuarioPorId(id);
     }
 
     @Override
@@ -90,6 +97,24 @@ public class CursoServiceImplementa implements CursoService {
             curso.removeCursoUsuario(cursoUsuario);//Se elimina el usuario del curso.
             cursoRepository.save(curso);//Se guarda el curso.
             return Optional.of(usuarioMsvc);//Se retorna el usuario del microservicio usuarios.
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> obtenerUsuariosPorCurso(Long id) {
+        Optional<Curso> o = cursoRepository.findById(id);//Se busca el curso por id.
+        if(o.isPresent()){
+            Curso curso = o.get();//Se obtiene el curso de la base de datos.
+            if(!curso.getCursoUsuarios().isEmpty()){
+                List<Long> ids = curso.getCursoUsuarios()
+                        .stream().map(cu->cu.getUsuarioId()) //Cada cursoUsuario se convierte en un id de usuario
+                        .collect(Collectors.toList());//Se obtienen los ids de los usuarios del curso y lo convertimso en una lista
+                List<Usuario> usuarios = usuarioClientRest.obtenerUsuariosPorCurso(ids);//Se obtienen los usuarios del microservicio usuarios.
+                curso.setUsuarios(usuarios);//Se asignan los usuarios al curso.
+            }
+            return Optional.of(curso);
         }
         return Optional.empty();
     }
