@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -23,8 +20,8 @@ public class UsuarioController {
 
     //Metodo para mostrar todos los usuarios
     @GetMapping
-    public List<Usuario> listar() {
-        return usuarioService.ListAllUsers();
+    public Map<String, List<Usuario>> listar() {
+        return Collections.singletonMap("usuarios", usuarioService.ListAllUsers());
     }
 
     //Se usa ResponseEntity para poder devolver un 404 en caso de que no exista el usuario de tipo <?> ya que no sabemos si
